@@ -72,8 +72,11 @@ class AdaptationModel(Model):
             household = Households(unique_id=i, model=self, initial_belief = random.uniform(0,1), stubbornness = random.uniform(0,1))
             self.schedule.add(household)
             self.grid.place_agent(agent=household, node_id=node)
+            
+        household.define_friends()
 
-        # You might want to create other agents here, e.g. insurance agents.
+        # You might want 
+        # to create other agents here, e.g. insurance agents.
 
         # Data collection setup to collect data
         model_metrics = {

@@ -22,7 +22,7 @@ class Households(Agent):
         self.belief = initial_belief #agents initial belief or opinion 
         self.stubbornness = stubbornness #coefficient ranging from 0 to 1
         self.influence_radius = 100
-
+        self.friends = []
         # getting flood map values
         # Get a random location on the map
         loc_x, loc_y = generate_random_location_within_map_domain()
@@ -50,6 +50,9 @@ class Households(Agent):
         
         #calculate the actual flood damage given the actual flood depth. Flood damage is a factor between 0 and 1
         self.flood_damage_actual = calculate_basic_flood_damage(flood_depth=self.flood_depth_actual)
+
+    def define_friends(self):
+        self.friends = self.model.grid.get_neighborhood(self.pos, include_center=False, radius=1)
     
     # Function to count friends who can be influencial.
     def count_friends(self, radius):
@@ -59,16 +62,19 @@ class Households(Agent):
 
     def step(self):
         # Assuming self.model.other_agents() returns a list of other agent objects
-        other_agents = self.model.other_agents(self)
+        friends = self.model.friends(self)
         # Calculate the weighted average of beliefs, including the agent's own belief
         total_weight = self.stubbornness
         weighted_belief_sum = self.belief * self.stubbornness
 
-        for other_agent in other_agents:
+        for friends in self.friends:
             # Assuming a function that calculates the weight given to others' beliefs
-            weight = self.calculate_weight(other_agent)
-            total_weight += weight
-            weighted_belief_sum += other_agent.belief * weight
+            if self.belief - friends.belief <= 0.5:
+                (
+                weight == self.calculate_weight(friends)
+                total_weight += weight
+                weighted_belief_sum += friends.belief * weight
+                )
 
         # Update the agent's belief based on the weighted sum of beliefs
         self.belief = weighted_belief_sum / total_weight
@@ -77,8 +83,8 @@ class Households(Agent):
         if self.flood_damage_estimated > 0.15 and random.random() < 0.2:
             self.is_adapted = True  # Agent adapts to flooding
 
-    def calculate_weight(self, other_agent): 
-        distance = math.sqrt((self.location[0]-other_agent.location[0]**2) + (self.location[1]-other.agent.location[1]**2))
+    def calculate_weight(self, friends): 
+        distance = math.sqrt((self.location[0]- friends.location[0]**2) + (self.location[1]-friends.location[1]**2))
         if distance > self.influence_radius:
             return 0 
         weight = 1 / (distance + 1)
