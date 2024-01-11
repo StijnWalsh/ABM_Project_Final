@@ -16,9 +16,12 @@ class Households(Agent):
     In a real scenario, this would be based on actual geographical data or more complex logic.
     """
 
-    def __init__(self, unique_id, model):
+    def __init__(self, unique_id, model, initial_belief, stubbornness):
         super().__init__(unique_id, model)
         self.is_adapted = False  # Initial adaptation status set to False
+        self.belief = initial_belief #agents initial belief or opinion 
+        self.stubbornness = stubbornness #coefficient ranging from 0 to 1
+        self.influence_radius = 100
 
         # getting flood map values
         # Get a random location on the map
@@ -55,10 +58,32 @@ class Households(Agent):
         return len(friends)
 
     def step(self):
+        # Assuming self.model.other_agents() returns a list of other agent objects
+        other_agents = self.model.other_agents(self)
+        # Calculate the weighted average of beliefs, including the agent's own belief
+        total_weight = self.stubbornness
+        weighted_belief_sum = self.belief * self.stubbornness
+
+        for other_agent in other_agents:
+            # Assuming a function that calculates the weight given to others' beliefs
+            weight = self.calculate_weight(other_agent)
+            total_weight += weight
+            weighted_belief_sum += other_agent.belief * weight
+
+        # Update the agent's belief based on the weighted sum of beliefs
+        self.belief = weighted_belief_sum / total_weight
         # Logic for adaptation based on estimated flood damage and a random chance.
         # These conditions are examples and should be refined for real-world applications.
         if self.flood_damage_estimated > 0.15 and random.random() < 0.2:
             self.is_adapted = True  # Agent adapts to flooding
+
+    def calculate_weight(self, other_agent): 
+        distance = math.sqrt((self.location[0]-other_agent.location[0]**2) + (self.location[1]-other.agent.location[1]**2))
+        if distance > self.influence_radius:
+            return 0 
+        weight = 1 / (distance + 1)
+        return weight
+
         
 # Define the Government agent class
 class Government(Agent):
