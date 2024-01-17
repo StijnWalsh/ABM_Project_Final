@@ -3,6 +3,8 @@ import random
 from mesa import Agent
 from shapely.geometry import Point
 from shapely import contains_xy
+import math 
+
 
 # Import functions from functions.py
 from functions import generate_random_location_within_map_domain, get_flood_depth, calculate_basic_flood_damage, floodplain_multipolygon
@@ -16,7 +18,7 @@ class Households(Agent):
     In a real scenario, this would be based on actual geographical data or more complex logic.
     """
 
-    def __init__(self, unique_id, model, initial_belief, stubbornness):
+    def __init__(self, unique_id, model, initial_belief, stubbornness, weight):
         super().__init__(unique_id, model)
         self.is_adapted = False  # Initial adaptation status set to False
         self.belief = initial_belief #agents initial belief or opinion 
@@ -27,6 +29,7 @@ class Households(Agent):
         # Get a random location on the map
         loc_x, loc_y = generate_random_location_within_map_domain()
         self.location = Point(loc_x, loc_y)
+        weight = 0
 
         # Check whether the location is within floodplain
         self.in_floodplain = False
@@ -62,19 +65,19 @@ class Households(Agent):
 
     def step(self):
         # Assuming self.model.other_agents() returns a list of other agent objects
-        friends = self.model.friends(self)
+        self.friends.append(friends)
         # Calculate the weighted average of beliefs, including the agent's own belief
         total_weight = self.stubbornness
         weighted_belief_sum = self.belief * self.stubbornness
 
         for friends in self.friends:
             # Assuming a function that calculates the weight given to others' beliefs
-            if self.belief - friends.belief <= 0.5:
-                (
+            if self.belief - friends.belief <= 0.5:   
                 weight == self.calculate_weight(friends)
                 total_weight += weight
                 weighted_belief_sum += friends.belief * weight
-                )
+            else: 
+                weight = 0        
 
         # Update the agent's belief based on the weighted sum of beliefs
         self.belief = weighted_belief_sum / total_weight
