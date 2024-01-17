@@ -72,8 +72,8 @@ class AdaptationModel(Model):
             household = Households(unique_id=i, model=self, initial_belief = random.uniform(0,1), stubbornness = random.uniform(0,1), weight = 0)
             self.schedule.add(household)
             self.grid.place_agent(agent=household, node_id=node)
-            
-        household.define_friends()
+        
+        self.agents.do('define_friends', radius=1)
 
         # You might want 
         # to create other agents here, e.g. insurance agents.

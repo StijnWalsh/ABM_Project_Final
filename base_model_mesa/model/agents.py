@@ -54,9 +54,12 @@ class Households(Agent):
         #calculate the actual flood damage given the actual flood depth. Flood damage is a factor between 0 and 1
         self.flood_damage_actual = calculate_basic_flood_damage(flood_depth=self.flood_depth_actual)
 
-    def define_friends(self):
-        self.friends = self.model.grid.get_neighborhood(self.pos, include_center=False, radius=1)
-    
+    def define_friends(self, radius):
+        """Get all agents in adjacent nodes."""
+        neighborhood = self.model.grid.get_neighborhood(self.pos, include_center=False, radius=radius)
+        self.friends = self.model.grid.get_cell_list_contents(neighborhood)
+        print(f"Agent {self.unique_id} has friends {[friend.unique_id for friend in self.friends]}")
+
     # Function to count friends who can be influencial.
     def count_friends(self, radius):
         """Count the number of neighbors within a given radius (number of edges away). This is social relation and not spatial"""
@@ -64,8 +67,6 @@ class Households(Agent):
         return len(friends)
 
     def step(self):
-        # Assuming self.model.other_agents() returns a list of other agent objects
-        self.friends.append(friends)
         # Calculate the weighted average of beliefs, including the agent's own belief
         total_weight = self.stubbornness
         weighted_belief_sum = self.belief * self.stubbornness
