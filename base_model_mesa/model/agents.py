@@ -4,6 +4,7 @@ from mesa import Agent
 from shapely.geometry import Point
 from shapely import contains_xy
 import math 
+##hoi jens
 
 
 # Import functions from functions.py
