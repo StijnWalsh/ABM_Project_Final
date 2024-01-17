@@ -24,7 +24,6 @@ class Households(Agent):
         self.is_adapted = False  # Initial adaptation status set to False
         self.belief = initial_belief #agents initial belief or opinion 
         self.stubbornness = stubbornness #coefficient ranging from 0 to 1
-        self.influence_radius = 100
         self.friends = []
         # getting flood map values
         # Get a random location on the map
@@ -68,33 +67,41 @@ class Households(Agent):
         return len(friends)
 
     def step(self):
-        # Calculate the weighted average of beliefs, including the agent's own belief
-        total_weight = self.stubbornness
-        weighted_belief_sum = self.belief * self.stubbornness
-
-        for friends in self.friends:
-            # Assuming a function that calculates the weight given to others' beliefs
-            if self.belief - friends.belief <= 0.5:   
-                weight == self.calculate_weight(friends)
-                total_weight += weight
-                weighted_belief_sum += friends.belief * weight
-            else: 
-                weight = 0        
-
-        # Update the agent's belief based on the weighted sum of beliefs
-        self.belief = weighted_belief_sum / total_weight
-        # Logic for adaptation based on estimated flood damage and a random chance.
-        # These conditions are examples and should be refined for real-world applications.
-        if self.flood_damage_estimated > 0.15 and random.random() < 0.2:
+        #herziene eigen belief bepaald adapted of niet 
+        if self.belief > 0.15 and random.random() < 0.2:    
             self.is_adapted = True  # Agent adapts to flooding
 
-    def calculate_weight(self, friends): 
-        distance = math.sqrt((self.location[0]- friends.location[0]**2) + (self.location[1]-friends.location[1]**2))
-        if distance > self.influence_radius:
-            return 0 
-        weight = 1 / (distance + 1)
-        return weight
+    def calculate_distance(self):
+        self.friends_distance = {}
+        for friend in self.friends: 
+            distance = math.sqrt((self.location.x - friend.location.x)**2 + (self.location.y - friend.location.y)**2)
+            self.friends_distance[friend] = distance
+        print_dict = {f'friend {friend.unique_id}':distance for friend,distance in self.friends_distance.items()}
+        print( f"Agent {self.unique_id}: {print_dict}" )
+        # print(self.friends_distance)
+    
+    def calculate_weight(self):
+        for friend in self.friends:
+            smallest_distance = min(friends_distance.values())
+            largest_distance = max(friends_distance.values())
 
+            normalized_distances = [(distance - smallest_distance) / (largest_distance - smallest_distance) for dist in friends_distances.values()]
+            return normalized_distances
+        if largest_distance == smallest_distance:
+            return 1
+        else:
+            weight = normalized_distances
+            return weight
+                                 
+             
+
+
+    def calculate_belief(self):
+        for friend in self.friends:
+            if abs(self.belief - friend.belief <= 0.5):   
+                self.belief = (self.stubbornness * self.belief + (friend.belief * self.weight) / self.stubbornness + self.weight)
+            else: 
+                self.belief = self.belief
         
 # Define the Government agent class
 class Government(Agent):
