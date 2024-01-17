@@ -73,7 +73,7 @@ class AdaptationModel(Model):
             self.schedule.add(household)
             self.grid.place_agent(agent=household, node_id=node)
         
-        self.agents.do('define_friends', radius=1)
+        self.agents.do('define_friends', radius=3)
 
         # You might want 
         # to create other agents here, e.g. insurance agents.
