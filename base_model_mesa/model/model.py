@@ -74,7 +74,11 @@ class AdaptationModel(Model):
             self.grid.place_agent(agent=household, node_id=node)
         
         self.agents.do('define_friends', radius=1)
+        
+        self.agents.do('calculate_distance')
 
+        self.agents.do('calculate_weight')
+        
         # You might want 
         # to create other agents here, e.g. insurance agents.
 

@@ -25,6 +25,7 @@ class Households(Agent):
         self.belief = initial_belief #agents initial belief or opinion 
         self.stubbornness = stubbornness #coefficient ranging from 0 to 1
         self.friends = []
+        self.weights = {}
         # getting flood map values
         # Get a random location on the map
         loc_x, loc_y = generate_random_location_within_map_domain()
@@ -78,30 +79,31 @@ class Households(Agent):
             self.friends_distance[friend] = distance
         print_dict = {f'friend {friend.unique_id}':distance for friend,distance in self.friends_distance.items()}
         print( f"Agent {self.unique_id}: {print_dict}" )
-        # print(self.friends_distance)
-    
+                
     def calculate_weight(self):
+        smallest_distance = min(self.friends_distance.values())
+        largest_distance = max(self.friends_distance.values())
+    
+    # To handle the case when all distances are the same (prevent division by zero)
+        if smallest_distance == largest_distance:
+            for friend in self.friends:
+                self.weights[friend] = 1 if smallest_distance == 0 else 0
+            return
+    
         for friend in self.friends:
-            smallest_distance = min(friends_distance.values())
-            largest_distance = max(friends_distance.values())
-
-            normalized_distances = [(distance - smallest_distance) / (largest_distance - smallest_distance) for dist in friends_distances.values()]
-            return normalized_distances
-        if largest_distance == smallest_distance:
-            return 1
-        else:
-            weight = normalized_distances
-            return weight
-                                 
-             
-
+            normalized_distance = (self.friends_distance[friend] - smallest_distance) / (largest_distance - smallest_distance)    
+            self.weights[friend] = normalized_distance
+        print_dictionary = {f'friend {friend.unique_id}': weight for friend, weight in self.weights.items()}
+        print(f"Weights of agent {self.unique_id}: {print_dictionary}")
+        print(f'Agents own belief=', self.belief)
 
     def calculate_belief(self):
         for friend in self.friends:
             if abs(self.belief - friend.belief <= 0.5):   
-                self.belief = (self.stubbornness * self.belief + (friend.belief * self.weight) / self.stubbornness + self.weight)
+                self.belief = ((self.stubbornness * self.belief + (friend.belief * self.weights[friend])) / self.stubbornness + self.weights[friend])
             else: 
                 self.belief = self.belief
+        print(self.belief)
         
 # Define the Government agent class
 class Government(Agent):
@@ -115,4 +117,21 @@ class Government(Agent):
         # The government agent doesn't perform any actions.
         pass
 
-# More agent classes can be added here, e.g. for insurance agents.
+
+##DIT STUK DOET HET NIET, BOVEN WERKT WEL MAAR BEGRIJP HET VERSCHIL NIET :(
+    ##def calculate_weight(self):
+        ##smallest_distance = min(self.friends_distance.values())
+        ##largest_distance = max(self.friends_distance.values())
+
+        #if smallest_distance == largest_distance:
+        #    for friend in self.friends:
+         #       if smallest_distance == 0:
+          #          self.weights[friend] = 1 
+           #     else:
+            #        self.weights[friend] = 0
+            #return
+        #for friend in self.friends:
+        #    normalized_distances = (self.friends_distance[friend] - smallest_distance) / (largest_distance - smallest_distance)
+         #   self.weights[friend] = normalized_distances
+          #  print_dictionary = {f'friend {friend.unique_id}':normalized_distances for friend,weights in self.weights.items()}    
+       # print(f"Weights of agent  {self.unique_id}: {print_dictionary}")
