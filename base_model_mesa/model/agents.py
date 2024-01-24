@@ -73,7 +73,7 @@ class Households(Agent):
         self.current_step += 1
         #herziene eigen belief bepaald adapted of niet
         self.calculate_belief()
-        if self.belief > 0.8 and random.random() < 0.2:    
+        if self.belief > 0.5 and random.random() < 0.2:    
             self.is_adapted = True  # Agent adapts to flooding
         self.get_belief_friends()
         
