@@ -69,7 +69,7 @@ class AdaptationModel(Model):
 
         # create households through initiating a household on each node of the network graph
         for i, node in enumerate(self.G.nodes()):
-            household = Households(unique_id=i, model=self, stubbornness = random.choice([1,2,3,4]), weight = 0)
+            household = Households(unique_id=i, model=self, stubbornness = random.choice([1,2,3,4]), weight = 0, current_step = 0 )
             self.schedule.add(household)
             self.grid.place_agent(agent=household, node_id=node)
         
