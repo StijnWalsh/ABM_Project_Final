@@ -27,7 +27,7 @@ class AdaptationModel(Model):
 
     def __init__(self,
                  seed = None,
-                 number_of_households = 25, # number of household agents
+                 number_of_households = 50, # number of household agents
                  # Simplified argument for choosing flood map. Can currently be "harvey", "100yr", or "500yr".
                  flood_map_choice='harvey',
                  # ### network related parameters ###
@@ -70,7 +70,7 @@ class AdaptationModel(Model):
 
         # create households through initiating a household on each node of the network graph
         for i, node in enumerate(self.G.nodes()):
-            household = Households(unique_id=i, model=self, stubbornness = 4, weight = 0, current_step = 0 )
+            household = Households(unique_id=i, model=self, stubbornness = random.choice([0.5,1,1.5,2]), weight = 0, current_step = 0 )
             self.schedule.add(household)
             self.grid.place_agent(agent=household, node_id=node)
         

@@ -87,8 +87,8 @@ class Households(Agent):
         for friend in self.friends: 
             distance = math.sqrt((self.location.x - friend.location.x)**2 + (self.location.y - friend.location.y)**2)
             self.friends_distance[friend] = distance
-        #print_dict = {f'friend {friend.unique_id}':distance for friend,distance in self.friends_distance.items()}
-        #print( f"Agent {self.unique_id}: {print_dict}" )    
+        print_dict = {f'friend {friend.unique_id}':distance for friend,distance in self.friends_distance.items()}
+        print( f"Agent {self.unique_id}: {print_dict}" )    
                 
     def calculate_weight(self):
         smallest_distance = min(self.friends_distance.values())
@@ -112,13 +112,14 @@ class Households(Agent):
         #print(print_dictionary2)
 
     def calculate_belief(self):
+        threshold = 0.2
         for friend in self.friends:
-            if abs(self.belief - friend.belief <= 0.5):   
+            if abs(self.belief - friend.belief) <= threshold:   
                 self.belief = ((self.stubbornness * self.belief + (friend.belief * self.weights[friend])) / (self.stubbornness + self.weights[friend]))
             else: 
                 self.belief = self.belief
-        print('At step:', self.current_step, 'agent', self.unique_id, 'has belief:', self.belief)
-
+        print('')
+        print('At step:', self.current_step, 'agent', self.unique_id, 'has belief:', self.belief) 
         
 # Define the Government agent class
 class Government(Agent):
