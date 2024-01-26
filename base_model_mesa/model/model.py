@@ -5,6 +5,7 @@ from mesa.time import RandomActivation
 from mesa.space import NetworkGrid
 from mesa.datacollection import DataCollector
 import geopandas as gpd
+import pandas as pd
 import rasterio as rs
 import matplotlib.pyplot as plt
 import random
@@ -24,7 +25,7 @@ class AdaptationModel(Model):
     simulates their behavior, and collects data. The network type can be adjusted based on study requirements.
     """
 
-    def __init__(self, 
+    def __init__(self,
                  seed = None,
                  number_of_households = 25, # number of household agents
                  # Simplified argument for choosing flood map. Can currently be "harvey", "100yr", or "500yr".
@@ -69,7 +70,7 @@ class AdaptationModel(Model):
 
         # create households through initiating a household on each node of the network graph
         for i, node in enumerate(self.G.nodes()):
-            household = Households(unique_id=i, model=self, stubbornness = random.choice([1,2,3,4]), weight = 0, current_step = 0 )
+            household = Households(unique_id=i, model=self, stubbornness = 4, weight = 0, current_step = 0 )
             self.schedule.add(household)
             self.grid.place_agent(agent=household, node_id=node)
         
@@ -89,17 +90,20 @@ class AdaptationModel(Model):
                         }
         
         agent_metrics = {
-                        "FloodDepthEstimated": "flood_depth_estimated",
+                        #"FloodDepthEstimated": "flood_depth_estimated",
                         "FloodDamageEstimated" : "flood_damage_estimated",
-                        "FloodDepthActual": "flood_depth_actual",
-                        "FloodDamageActual" : "flood_damage_actual",
+                        #"FloodDepthActual": "flood_depth_actual",
+                        #"FloodDamageActual" : "flood_damage_actual",
                         "IsAdapted": "is_adapted",
                         "FriendsCount": lambda a: a.count_friends(radius=1),
-                        "location":"location",
-                        "belief": "belief"
+                        #"location":"location",
+                        "belief": "belief",
+                        "Stubornness" : "stubbornness",
+                        "Friends" : "friend.unique_id", 
                         # ... other reporters ...
                         }
-        #set up the data collector 
+        #set up the data collector
+        pd.options.display.max_rows = 1000
         self.datacollector = DataCollector(model_reporters=model_metrics, agent_reporters=agent_metrics)
             
 

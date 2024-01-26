@@ -5,8 +5,6 @@ from shapely.geometry import Point
 from shapely import contains_xy
 import math 
 
-
-
 # Import functions from functions.py
 from functions import generate_random_location_within_map_domain, get_flood_depth, calculate_basic_flood_damage, floodplain_multipolygon
 
@@ -27,6 +25,7 @@ class Households(Agent):
         self.friends = []
         self.weights = {}
         self.current_step = 0
+        self.running = True
         weight = 0
         # getting flood map values
         # Get a random location on the map
@@ -73,7 +72,7 @@ class Households(Agent):
         self.current_step += 1
         #herziene eigen belief bepaald adapted of niet
         self.calculate_belief()
-        if self.belief > 0.5 and random.random() < 0.2:    
+        if self.belief > 0.5: #and random.random() < 0.2: 
             self.is_adapted = True  # Agent adapts to flooding
         self.get_belief_friends()
         
@@ -88,8 +87,8 @@ class Households(Agent):
         for friend in self.friends: 
             distance = math.sqrt((self.location.x - friend.location.x)**2 + (self.location.y - friend.location.y)**2)
             self.friends_distance[friend] = distance
-        print_dict = {f'friend {friend.unique_id}':distance for friend,distance in self.friends_distance.items()}
-        print( f"Agent {self.unique_id}: {print_dict}" )    
+        #print_dict = {f'friend {friend.unique_id}':distance for friend,distance in self.friends_distance.items()}
+        #print( f"Agent {self.unique_id}: {print_dict}" )    
                 
     def calculate_weight(self):
         smallest_distance = min(self.friends_distance.values())
