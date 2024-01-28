@@ -27,7 +27,7 @@ class AdaptationModel(Model):
 
     def __init__(self,
                  seed = None,
-                 number_of_households = 100, # number of household agents
+                 number_of_households = 50, # number of household agents
                  # Simplified argument for choosing flood map. Can currently be "harvey", "100yr", or "500yr".
                  flood_map_choice='harvey',
                  # ### network related parameters ###
@@ -102,12 +102,11 @@ class AdaptationModel(Model):
                         "FloodDamageEstimated" : "flood_damage_estimated",
                         #"FloodDepthActual": "flood_depth_actual",
                         #"FloodDamageActual" : "flood_damage_actual",
-                        "IsAdapted": "is_adapted",
+                        #"IsAdapted": "is_adapted",
                         "FriendsCount": lambda a: a.count_friends(radius=1),
                         #"location":"location",
                         "belief": "belief",
                         "Stubornness" : "stubbornness",
-                        "Friends" : "friend.unique_id", 
                         # ... other reporters ...
                         }
         #set up the data collector

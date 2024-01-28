@@ -114,7 +114,7 @@ class Households(Agent):
         #print(print_dictionary2)
 
     def calculate_belief(self):
-        threshold = 0.2
+        threshold = 0.5
         for friend in self.friends:
             if abs(self.belief - friend.belief) <= threshold:   
                 self.belief = ((self.stubbornness * self.belief + (friend.belief * self.weights[friend])) / (self.stubbornness + self.weights[friend]))
