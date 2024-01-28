@@ -17,7 +17,7 @@ class Households(Agent):
     In a real scenario, this would be based on actual geographical data or more complex logic.
     """
 
-    def __init__(self, unique_id, model, stubbornness, weight, current_step):
+    def __init__(self, unique_id, model, stubbornness, threshold, weight, current_step):
         super().__init__(unique_id, model)
         self.is_adapted = False  # Initial adaptation status set to False
         ##self.belief = initial_belief #agents initial belief or opinion 
@@ -26,7 +26,9 @@ class Households(Agent):
         self.weights = {}
         self.current_step = 0
         self.running = True
-        weight = 0
+        self.threshold = threshold
+        self.weight = weight
+        self.current_step = current_step
         # getting flood map values
         # Get a random location on the map
         loc_x, loc_y = generate_random_location_within_map_domain()
