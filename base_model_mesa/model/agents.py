@@ -17,16 +17,16 @@ class Households(Agent):
     In a real scenario, this would be based on actual geographical data or more complex logic.
     """
 
-    def __init__(self, unique_id, model, stubbornness, threshold, weight, current_step):
+    def __init__(self, unique_id, model, stubbornness, weight, current_step, avg_diff_agent):
         super().__init__(unique_id, model)
         self.is_adapted = False  # Initial adaptation status set to False
         ##self.belief = initial_belief #agents initial belief or opinion 
         self.stubbornness = stubbornness #coefficient ranging from 0 to 1
         self.friends = []
         self.weights = {}
+        self.avg_diff_agent = []
         self.current_step = 0
         self.running = True
-        self.threshold = threshold
         self.weight = weight
         self.current_step = current_step
         # getting flood map values
@@ -77,6 +77,15 @@ class Households(Agent):
         if self.belief > 0.5: #and random.random() < 0.2: 
             self.is_adapted = True  # Agent adapts to flooding
         self.get_belief_friends()
+        belief_differences = [abs(self.belief - friend.belief) for friend in self.friends]
+
+        # Calculate the average difference in belief
+        average_belief_difference = sum(belief_differences) / len(belief_differences) if belief_differences else  0
+        self.avg_diff_agent.append(average_belief_difference)
+        print('')
+        print('')        
+        print("The average belief difference at this step is", average_belief_difference)
+    
         
         
     def get_belief_friends(self):
@@ -113,16 +122,16 @@ class Households(Agent):
         print(f'Agents stubbornness =', self.stubbornness)
         #print(print_dictionary2)
 
+    
     def calculate_belief(self):
-        threshold = 1
         for friend in self.friends:
-            if abs(self.belief - friend.belief) <= threshold:   
+            if abs(self.belief - friend.belief) <= 1:   
                 self.belief = ((self.stubbornness * self.belief + (friend.belief * self.weights[friend])) / (self.stubbornness + self.weights[friend]))
             else: 
                 self.belief = self.belief
         print('')
-        print('At step:', self.current_step, 'agent', self.unique_id, 'has belief:', self.belief) 
-        
+        print('At step:', self.current_step, 'agent', self.unique_id, 'has belief:', self.belief)
+
 # Define the Government agent class
 class Government(Agent):
     """
@@ -134,22 +143,6 @@ class Government(Agent):
     def step(self):
         # The government agent doesn't perform any actions.
         pass
+ 
 
 
-##DIT STUK DOET HET NIET, BOVEN WERKT WEL MAAR BEGRIJP HET VERSCHIL NIET :(
-    ##def calculate_weight(self):
-        ##smallest_distance = min(self.friends_distance.values())
-        ##largest_distance = max(self.friends_distance.values())
-
-        #if smallest_distance == largest_distance:
-        #    for friend in self.friends:
-         #       if smallest_distance == 0:
-          #          self.weights[friend] = 1 
-           #     else:
-            #        self.weights[friend] = 0
-            #return
-        #for friend in self.friends:
-        #    normalized_distances = (self.friends_distance[friend] - smallest_distance) / (largest_distance - smallest_distance)
-         #   self.weights[friend] = normalized_distances
-          #  print_dictionary = {f'friend {friend.unique_id}':normalized_distances for friend,weights in self.weights.items()}    
-       # print(f"Weights of agent  {self.unique_id}: {print_dictionary}")

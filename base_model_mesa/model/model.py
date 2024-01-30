@@ -39,10 +39,9 @@ class AdaptationModel(Model):
                  # number of edges for BA network
                  number_of_edges = 3,
                  # number of nearest neighbours for WS social network
-                 number_of_nearest_neighbours = 5,
+                 number_of_nearest_neighbours = 10,
                  weight = 0,
-                 stubbornness = 1, 
-                 threshold = 1, 
+                 stubbornness = random.choice([0.5,1,1.5,2]), 
                  current_step = 0,
                  
 
@@ -55,7 +54,6 @@ class AdaptationModel(Model):
         self.number_of_households = number_of_households  # Total number of household agents
         self.seed = seed
         self.stubbornness = stubbornness
-        self.threshold = threshold
         self.weight = weight
         self.current_step = current_step
 
@@ -78,10 +76,11 @@ class AdaptationModel(Model):
 
         # create households through initiating a household on each node of the network graph
         for i, node in enumerate(self.G.nodes()):
-            household_stubbornness = random.choice([0.5,1,1.5,2])
-            household = Households(unique_id=i, model=self, stubbornness = household_stubbornness, threshold = self.threshold, weight = 0, current_step = 0 )
+            household_stubbornness = 1
+            household = Households(unique_id=i, model=self, stubbornness = household_stubbornness, weight = 0, current_step = 0, avg_diff_agent=0 )
             self.schedule.add(household)
             self.grid.place_agent(agent=household, node_id=node)
+            
         
         self.agents.do('define_friends', radius=1)
         
@@ -103,7 +102,7 @@ class AdaptationModel(Model):
                         "FloodDamageEstimated" : "flood_damage_estimated",
                         #"FloodDepthActual": "flood_depth_actual",
                         #"FloodDamageActual" : "flood_damage_actual",
-                        #"IsAdapted": "is_adapted",
+                        "IsAdapted": "is_adapted",
                         "FriendsCount": lambda a: a.count_friends(radius=1),
                         #"location":"location",
                         "belief": "belief",
