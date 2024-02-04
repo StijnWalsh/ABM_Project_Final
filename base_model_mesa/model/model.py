@@ -41,10 +41,8 @@ class AdaptationModel(Model):
                  # number of nearest neighbours for WS social network
                  number_of_nearest_neighbours = 10,
                  weight = 0,
-                 stubbornness = random.choice([0.5,1,1.5,2]), 
+                 stubbornness = 30, 
                  current_step = 0,
-                 
-
                 
                  ):
         
@@ -76,7 +74,7 @@ class AdaptationModel(Model):
 
         # create households through initiating a household on each node of the network graph
         for i, node in enumerate(self.G.nodes()):
-            household_stubbornness = 1
+            household_stubbornness = 30
             household = Households(unique_id=i, model=self, stubbornness = household_stubbornness, weight = 0, current_step = 0, avg_diff_agent=0 )
             self.schedule.add(household)
             self.grid.place_agent(agent=household, node_id=node)

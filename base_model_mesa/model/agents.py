@@ -77,6 +77,7 @@ class Households(Agent):
         if self.belief > 0.5: #and random.random() < 0.2: 
             self.is_adapted = True  # Agent adapts to flooding
         self.get_belief_friends()
+        #average_belief = (self.belief + (friend.belief for friend in self.friends)) / (1 + len(self.friends))
         belief_differences = [abs(self.belief - friend.belief) for friend in self.friends]
 
         # Calculate the average difference in belief
@@ -86,8 +87,7 @@ class Households(Agent):
         print('')        
         print("The average belief difference at this step is", average_belief_difference)
     
-        
-        
+
     def get_belief_friends(self):
         for friend in self.friends:
             print(f'Friend', friend.unique_id, 'has belief', friend.belief)
